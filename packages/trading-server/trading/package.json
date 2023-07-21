@@ -1,0 +1,29 @@
+{
+  "name": "upbitApi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "serve": "node server/server.js",
+    "basicTest": "node test/basicTest.js",
+    "test": "node test/tradeTest.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "dateformat": "^4.4.1",
+    "dotenv": "^8.2.0",
+    "ejs": "^3.1.5",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "kafka-node": "^5.0.0",
+    "node-fetch": "^2.6.1",
+    "node-notifier": "^9.0.0",
+    "querystring": "^0.2.0",
+    "request": "^2.88.2",
+    "uuid": "^8.3.2"
+  }
+}
