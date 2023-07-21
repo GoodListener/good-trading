@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Tooltips</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+
+		<link rel="stylesheet" href="./dist/uPlot.min.css">
+	</head>
+	<body>
+		<p>
+			<span id="score"></span>
+		</p>
+		<script src="./dist/uPlot.iife.min.js"></script>
+		<script>
+			function tooltipsPlugin(opts) {
+				function init(u, opts, data) {
+					let plot = u.root.querySelector(".u-over");
+
+					let ttc = u.cursortt = document.createElement("div");
+					ttc.className = "tooltip";
+					ttc.textContent = "(x,y)";
+					ttc.style.pointerEvents = "none";
+					ttc.style.position = "absolute";
+					ttc.style.background = "rgba(0,0,255,0.1)";
+					plot.appendChild(ttc);
+
+					u.seriestt = opts.series.map((s, i) => {
+						if (i == 0) return;
+
+						let tt = document.createElement("div");
+						tt.className = "tooltip";
+						tt.textContent = "Tooltip!";
+						tt.style.pointerEvents = "none";
+						tt.style.position = "absolute";
+						tt.style.background = "rgba(0,0,0,0.1)";
+						tt.style.color = s.color;
+						tt.style.display = s.show ? null : "none";
+						plot.appendChild(tt);
+						return tt;
+					});
+
+					function hideTips() {
+						ttc.style.display = "none";
+						u.seriestt.forEach((tt, i) => {
+							if (i == 0) return;
+
+							tt.style.display = "none";
+						});
+					}
+
+					function showTips() {
+						ttc.style.display = null;
+						u.seriestt.forEach((tt, i) => {
+							if (i == 0) return;
+
+							let s = u.series[i];
+							tt.style.display = s.show ? null : "none";
+						});
+					}
+
+					plot.addEventListener("mouseleave", () => {
+						if (!u.cursor._lock) {
+						//	u.setCursor({left: -10, top: -10});
+							hideTips();
+						}
+					});
+
+					plot.addEventListener("mouseenter", () => {
+						showTips();
+					});
+
+					hideTips();
+				}
+
+				function setCursor(u) {
+					const {left, top, idx} = u.cursor;
+
+					// this is here to handle if initial cursor position is set
+					// not great (can be optimized by doing more enter/leave state transition tracking)
+				//	if (left > 0)
+				//		u.cursortt.style.display = null;
+
+					u.cursortt.style.left = left + "px";
+					u.cursortt.style.top = top + "px";
+					u.cursortt.textContent = "(" + u.posToVal(left, "x").toFixed(2) + ", " + u.posToVal(top, "y").toFixed(2) + ")";
+
+					// can optimize further by not applying styles if idx did not change
+					u.seriestt.forEach((tt, i) => {
+						if (i == 0) return;
+
+						let s = u.series[i];
+
+						if (s.show) {
+							// this is here to handle if initial cursor position is set
+							// not great (can be optimized by doing more enter/leave state transition tracking)
+						//	if (left > 0)
+						//		tt.style.display = null;
+
+							let xVal = u.data[0][idx];
+							let yVal = u.data[i][idx];
+
+							tt.textContent = "(" + xVal + ", " + yVal + ")";
+
+							tt.style.left = Math.round(u.valToPos(xVal, 'x')) + "px";
+							tt.style.top = Math.round(u.valToPos(yVal, s.scale)) + "px";
+						}
+					});
+				}
+
+				return {
+					hooks: {
+						init,
+						setCursor,
+						setScale: [
+							(u, key) => {
+								console.log('setScale', key);
+							}
+						],
+						setSeries: [
+							(u, idx) => {
+								console.log('setSeries', idx);
+							}
+						],
+					},
+				};
+			}
+
+			function makeChart() {
+				let opts = {
+					title: "Tooltips",
+					width: 1600,
+					height: 600,
+				//	cursor: {
+				//		top: 100,
+				//		left: 100,
+				//	},
+					axes: [
+						{
+						},
+						{
+							values: (self, ticks) => ticks.map(value => value > 1000000 ? (value / 1000000).toFixed(2) + "M" : value)
+						},
+						{
+							side: 1,
+							scale: 'r'
+						}
+					],
+					plugins: [
+						tooltipsPlugin(),
+					],
+					scales: {
+						x: {
+							time: true,
+						}
+					},
+					series: [
+						{},
+						{
+							label: "price",
+							stroke: "#18C128",
+						},
+						{
+							label: "ma1Price",
+							stroke: "#FFC600",
+							show: false
+						},
+						{
+							label: "ma5Price",
+							stroke: "#C27251",
+							show: false
+						},
+						{
+							label: "ma10Price",
+							stroke: "#8400FF",
+						},
+						{
+							label: "ma20Price",
+							stroke: "#FF7200",
+						},
+						{
+							label: "ma60Price",
+							stroke: "#00FFD2",
+							show: false
+						},
+						{
+							label: "ma120Price",
+							stroke: "#5CD6D2",
+							show: false
+						},
+						{
+							label: "avg",
+							stroke: "#DF00BD",
+						},
+						{
+							label: "avg1perUpPrice",
+							stroke: "#FE1B90",
+							show: false
+						},
+						{
+							label: "avg1perDownPrice",
+							stroke: "#228AFF",
+							show: false
+						},
+						{
+							label: "avg2perDownPrice",
+							stroke: "#228AFF",
+							show: false
+						},
+						{
+							label: "avgBuyPrice",
+							stroke: "gray",
+						},
+						{
+							label: "sellTiming",
+							stroke: "red",
+							paths: u => null,
+							points: {
+								space: 0,
+								fill: "red"
+							}
+						},
+						{
+							label: "buyTiming",
+							stroke: "blue",
+							paths: u => null,
+							points: {
+								space: 0,
+								fill: "blue"
+							}
+						},
+						{
+							label: "buyWaiting",
+							stroke: "green",
+							paths: u => null,
+							points: {
+								space: 0,
+								fill: "green"
+							}
+						},
+						{
+							label: "incline10",
+							stroke: "#32A200",
+							show: false,
+							scale: 'r'
+						},
+					]
+				};
+				
+				fetch('/data?data=<%=fileName%>', {method: 'GET'}).then(res => res.json())
+				.then(logData => {
+					const data = [
+						logData.time,
+						logData.price,
+						logData.ma1Price ? logData.ma1Price : [null],
+						logData.ma5Price ? logData.ma5Price : [null],
+						logData.ma10Price ? logData.ma10Price : [null],
+						logData.ma20Price ? logData.ma20Price : [null],
+						logData.ma60Price ? logData.ma60Price : [null],
+						logData.ma120Price ? logData.ma120Price : [null],
+						logData.avg,
+						logData.avg1perUpPrice ? logData.avg1perUpPrice : [null],
+						logData.avg1perDownPrice ? logData.avg1perDownPrice : [null],
+						logData.avg2perDownPrice ? logData.avg2perDownPrice : [null],
+						logData.avgBuyPrice ? logData.avgBuyPrice : [null],
+						logData.sellTiming,
+						logData.buyTiming,
+						logData.buyWaiting ? logData.buyWaiting : [null],
+						logData.ma10PricesIncline ? logData.ma10PricesIncline : [null]
+					]
+					let u = new uPlot(opts, data, document.body);
+
+					document.getElementById('score').innerText = `
+						score: ${logData.score.balance + logData.score.account.balance * logData.score.account.price}
+						percent: ${((logData.score.balance + logData.score.account.balance * logData.score.account.price) / 100000 - 1) * 100}%
+						`;
+						
+				})
+
+				console.timeEnd('chart');
+			}
+
+			makeChart();
+		</script>
+	</body>
+</html>
