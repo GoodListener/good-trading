@@ -4,9 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start:web": "pnpm start --filter trading-front",
+    "start:server": "pnpm start:dev --filter trading-server"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "workspaces": [
+    "packages/*"
+  ],
+  "engines": {
+    "pnpm": "8.5.1"
+  },
+  "packageManager": "pnpm@8.5.1",
+  "devDependencies": {
+    "pnpm": "8.5.1"
+  }
 }
