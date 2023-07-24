@@ -4,17 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:web": "pnpm start --filter trading-front",
-    "start:server": "pnpm start:dev --filter trading-server"
+    "start:web": "pnpm run --filter trading-front dev",
+    "start:server": "pnpm --filter trading-server start:dev"
   },
   "workspaces": [
     "packages/*"
-  ],
-  "engines": {
-    "pnpm": "8.5.1"
-  },
-  "packageManager": "pnpm@8.5.1",
-  "devDependencies": {
-    "pnpm": "8.5.1"
-  }
+  ]
 }
