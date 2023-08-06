@@ -1,11 +1,7 @@
-const dotenv = require('dotenv');
-dotenv.config();
-const dateFormat = require('dateformat');
 const { getTicker } = require('./api/market.js');
 const CoinAnalyser = require('./coin/CoinAnalyser.js');
 const txtLogger = require('./logger/txtLogger.js');
 const trader = require('./trade/trader');
-const producer = require('./kafka/producer');
 const state = require('./state/state');
 
 /**

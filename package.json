@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start:web": "pnpm start --filter trading-front",
-    "start:server": "pnpm start:dev --filter trading-server"
+    "start:web": "pnpm --filter trading-front dev",
+    "start:server": "pnpm --filter trading-server start:dev"
   },
   "workspaces": [
     "packages/*"
